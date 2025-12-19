@@ -484,7 +484,27 @@ def main():
             diff_vals = y - x
             bias = np.mean(diff_vals)
             sd = np.std(diff_vals, ddof=1)
-            ax2.scatter(mean_vals, diff_vals, s=point_size, alpha=0.8, color=primary_color)
+            # Coloration selon la tolérance (seuil d'erreur absolue ±T Gy)
+            T = abs_threshold
+            ok = np.abs(diff_vals) <= T
+            # Points dans la tolérance
+            ax2.scatter(
+                mean_vals[ok],
+                diff_vals[ok],
+                s=point_size,
+                alpha=0.85,
+                color=primary_color,
+                label=f"|diff| ≤ {T:.2f} Gy",
+            )
+            # Points hors tolérance
+            ax2.scatter(
+                mean_vals[~ok],
+                diff_vals[~ok],
+                s=point_size,
+                alpha=0.85,
+                color="orange",   # tu peux mettre une color_picker si tu veux
+                label=f"|diff| > {T:.2f} Gy",
+            )
             ax2.axhline(bias, color="gray", linestyle="-", label=f"Biais moyen = {bias:.2f} Gy")
             ax2.axhline(bias + 1.96 * sd, color="gray", linestyle="--", alpha=0.7)
             ax2.axhline(bias - 1.96 * sd, color="gray", linestyle="--", alpha=0.7)
