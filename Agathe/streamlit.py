@@ -528,7 +528,7 @@ def main():
                 color="orange",   # tu peux mettre une color_picker si tu veux
                 label=f"|diff| > {T:.2f} Gy",
             )
-            ax2.axhline(bias, color="gray", linestyle="-", label=f"Biais moyen = {bias:.2f} Gy")
+            ax2.axhline(bias, color="gray", linestyle="-", label=f"Mean bias = {bias:.2f} Gy")
             ax2.axhline(bias + 1.96 * sd, color="gray", linestyle="--", alpha=0.7)
             ax2.axhline(bias - 1.96 * sd, color="gray", linestyle="--", alpha=0.7)
             ax2.set_ylim(-10, 25)
