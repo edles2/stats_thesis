@@ -475,12 +475,44 @@ def main():
             apply_plot_theme(fig1, ax1, theme_mode=theme_mode, primary_color=primary_color)
             st.pyplot(fig1, use_container_width=True)
             # Bande de tolérance en erreur absolue (±T Gy autour de y=x)
+            diff_vals = y - x
             T = abs_threshold
-            ax1.plot([min_val, max_val], [min_val + T, max_val + T], ":", color="gray", alpha=0.7)
-            ax1.plot([min_val, max_val], [min_val - T, max_val - T], ":", color="gray", alpha=0.7)
-            # Optionnel : remplir la bande (plus parlant)
-            xs = np.linspace(min_val, max_val, 200)
-            ax1.fill_between(xs, xs - T, xs + T, color="gray", alpha=0.08)
+            ok = np.abs(diff_vals) <= T
+            min_val = min(np.min(x), np.min(y))
+            max_val = max(np.max(x), np.max(y))
+            # Bande de tolérance ±T autour de y=x (AVANT les points)
+            if T is not None and T > 0:
+                xs = np.linspace(min_val, max_val, 200)
+                ax1.fill_between(
+                    xs, xs - T, xs + T,
+                    color=outlier_color,
+                    alpha=0.12,          # augmente si tu veux plus visible
+                    linewidth=0,
+                    zorder=0             # important
+                )
+                ax1.plot([min_val, max_val], [min_val + T, max_val + T], ":", color=outlier_color, alpha=0.9, zorder=1)
+                ax1.plot([min_val, max_val], [min_val - T, max_val - T], ":", color=outlier_color, alpha=0.9, zorder=1)
+            # Points dans la tolérance
+            ax1.scatter(
+                x[ok], y[ok],
+                s=point_size,
+                alpha=0.85,
+                color=primary_color,
+                label=f"|diff| ≤ {T:.2f} Gy",
+                zorder=2
+            )
+            
+            # Points hors tolérance
+            ax1.scatter(
+                x[~ok], y[~ok],
+                s=point_size,
+                alpha=0.85,
+                color=outlier_color,
+                label=f"|diff| > {T:.2f} Gy",
+                zorder=3
+            )
+            ax1.plot([min_val, max_val], [min_val, max_val], "--", color="gray", alpha=0.7, zorder=1)
+            ax1.legend()
 
             # 2) Bland–Altman
             st.markdown("#### Bland–Altman : différence vs moyenne")
