@@ -482,8 +482,8 @@ def main():
                 xs = np.linspace(min_val, max_val, 400)
                 ax1.fill_between(xs, xs - T, xs + T, color=outlier_color, alpha=0.22, linewidth=0, zorder=0)
                 # Limites de tolérance (au-dessus, épaisses -> visibles)
-                ax1.plot([min_val, max_val], [min_val + T, max_val + T], ":", color=outlier_color, linewidth=3.0, alpha=0.95, zorder=10)
-                ax1.plot([min_val, max_val], [min_val - T, max_val - T], ":", color=outlier_color, linewidth=3.0, alpha=0.95, zorder=10)
+                #ax1.plot([min_val, max_val], [min_val + T, max_val + T], ":", color=outlier_color, linewidth=3.0, alpha=0.95, zorder=10)
+                #ax1.plot([min_val, max_val], [min_val - T, max_val - T], ":", color=outlier_color, linewidth=3.0, alpha=0.95, zorder=10)
             
             # Diagonale y=x
             ax1.plot([min_val, max_val], [min_val, max_val], "--", color="gray", alpha=0.7, zorder=1)
