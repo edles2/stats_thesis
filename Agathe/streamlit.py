@@ -467,28 +467,28 @@ def main():
             x = df_g["dose_manuel"].to_numpy()
             y = df_g["dose_method"].to_numpy()
             
-            # Différence pour la tolérance
             diff_vals = y - x
-            T = abs_threshold
+            T = float(abs_threshold)
             ok = np.abs(diff_vals) <= T
             
-            min_val = min(np.min(x), np.min(y))
-            max_val = max(np.max(x), np.max(y))
+            min_val = float(min(np.min(x), np.min(y)))
+            max_val = float(max(np.max(x), np.max(y)))
+            
+            # Debug visuel : si tu ne vois pas cette ligne, ce bloc ne s'exécute pas
+            st.caption(f"[Debug scatter] T={T:.2f} Gy — hors tolérance: {(~ok).sum()} / {len(ok)}")
             
             # Bande de tolérance (derrière)
-            if T is not None and T > 0:
-                xs = np.linspace(min_val, max_val, 300)
-                ax1.fill_between(xs, xs - T, xs + T, color=outlier_color, alpha=0.18, linewidth=0, zorder=0)
+            if T > 0:
+                xs = np.linspace(min_val, max_val, 400)
+                ax1.fill_between(xs, xs - T, xs + T, color=outlier_color, alpha=0.22, linewidth=0, zorder=0)
+                # Limites de tolérance (au-dessus, épaisses -> visibles)
+                ax1.plot([min_val, max_val], [min_val + T, max_val + T], ":", color=outlier_color, linewidth=3.0, alpha=0.95, zorder=10)
+                ax1.plot([min_val, max_val], [min_val - T, max_val - T], ":", color=outlier_color, linewidth=3.0, alpha=0.95, zorder=10)
             
             # Diagonale y=x
             ax1.plot([min_val, max_val], [min_val, max_val], "--", color="gray", alpha=0.7, zorder=1)
             
-            # Limites de tolérance (au-dessus, épaisses -> visibles)
-            if T is not None and T > 0:
-                ax1.plot([min_val, max_val], [min_val + T, max_val + T], ":", color=outlier_color, linewidth=2.5, alpha=0.95, zorder=10)
-                ax1.plot([min_val, max_val], [min_val - T, max_val - T], ":", color=outlier_color, linewidth=2.5, alpha=0.95, zorder=10)
-            
-            # Points dans / hors tolérance (même couleur que BA pour hors tolérance)
+            # Points OK / hors tolérance
             ax1.scatter(x[ok], y[ok], s=point_size, alpha=0.85, color=primary_color, label=f"|diff| ≤ {T:.2f} Gy", zorder=3)
             ax1.scatter(x[~ok], y[~ok], s=point_size, alpha=0.85, color=outlier_color, label=f"|diff| > {T:.2f} Gy", zorder=4)
             
