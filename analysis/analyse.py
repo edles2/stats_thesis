@@ -265,6 +265,15 @@ def proportion_ci_normal(
     return float(lower), float(upper)
 
 
+def spearman_corr(x: np.ndarray, y: np.ndarray) -> float:
+    """Calcule une corrélation de Spearman sans dépendre de scipy."""
+    sx = pd.Series(x)
+    sy = pd.Series(y)
+    rx = sx.rank(method="average")
+    ry = sy.rank(method="average")
+    return float(rx.corr(ry, method="pearson"))
+
+
 # ---------------------------------------------------------------------------
 # 6. Résumés par zone : biais, erreurs, corrélation
 # ---------------------------------------------------------------------------
@@ -350,19 +359,14 @@ def compute_zone_summary(
 
         # Corrélation de Spearman (via pandas, sans dépendance externe)
         if n_pairs >= 3:
-            s_manuel = pd.Series(dose_manuel)
-            s_method = pd.Series(dose_method)
-            spearman_r = float(s_manuel.corr(s_method, method="spearman"))
+            spearman_r = spearman_corr(dose_manuel, dose_method)
 
             # IC bootstrap pour la corrélation
             rng = np.random.default_rng(0)
             rs = []
             for _ in range(n_bootstrap):
                 idx = rng.integers(0, n_pairs, size=n_pairs)
-                r = pd.Series(dose_manuel[idx]).corr(
-                    pd.Series(dose_method[idx]),
-                    method="spearman",
-                )
+                r = spearman_corr(dose_manuel[idx], dose_method[idx])
                 rs.append(r)
             spearman_ci_low = float(np.nanpercentile(rs, 100 * alpha / 2))
             spearman_ci_high = float(np.nanpercentile(rs, 100 * (1 - alpha / 2)))

@@ -14,6 +14,8 @@ lecteur de médecine.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 
@@ -22,8 +24,8 @@ import pandas as pd
 # ---------------------------------------------------------------------------
 
 # Nom du fichier Excel contenant les données brutes.
-# À adapter si besoin à l'emplacement réel sur votre ordinateur.
-EXCEL_FILE = "Synthese These Marie.xlsx"  # adapter au vrai nom exact
+# Par défaut, on s'attend à un fichier local privé (non versionné).
+EXCEL_FILE = Path(__file__).resolve().parent / "private_data" / "thesis_source_data.xlsx"
 SHEET_NAME = 0  # première feuille ; adapter si besoin
 
 
@@ -278,7 +280,10 @@ def add_symmetric_pair(df: pd.DataFrame) -> pd.DataFrame:
 # 6. Fonction principale : construire le tableau propre ("tidy")
 # ---------------------------------------------------------------------------
 
-def build_tidy_dataframe(excel_file: str = EXCEL_FILE, sheet_name: int | str = SHEET_NAME) -> pd.DataFrame:
+def build_tidy_dataframe(
+    excel_file: str | Path = EXCEL_FILE,
+    sheet_name: int | str = SHEET_NAME,
+) -> pd.DataFrame:
     """Lit le fichier Excel brut et renvoie un DataFrame au format "long".
 
     Étapes :
@@ -288,9 +293,16 @@ def build_tidy_dataframe(excel_file: str = EXCEL_FILE, sheet_name: int | str = S
     4. Fusion de tous les secteurs.
     5. Ajout des colonnes arcade / côté / paire symétrique.
     """
+    excel_path = Path(excel_file)
+    if not excel_path.exists():
+        raise FileNotFoundError(
+            f"Fichier Excel introuvable: {excel_path}. "
+            "Placez le fichier privé dans analysis/private_data/thesis_source_data.xlsx."
+        )
+
     # 1. Lecture brute (header=None car la première ligne du fichier n'est
     #    pas la vraie ligne d'en-tête de nos données).
-    df_raw = pd.read_excel(excel_file, sheet_name=sheet_name, header=None)
+    df_raw = pd.read_excel(excel_path, sheet_name=sheet_name, header=None)
 
     # 2. Lignes des secteurs
     secteur_rows = find_secteur_rows(df_raw)

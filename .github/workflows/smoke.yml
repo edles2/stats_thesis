@@ -1,0 +1,25 @@
+name: smoke
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - codex/stats-thesis-cleanup
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r analysis/requirements.txt
+      - name: Run synthetic smoke
+        run: |
+          python -m py_compile analysis/data.py analysis/analyse.py analysis/streamlit.py analysis/smoke.py
+          python analysis/smoke.py

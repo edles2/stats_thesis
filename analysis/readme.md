@@ -1,10 +1,15 @@
-# 1) Créer un environnement (optionnel mais recommandé)
+# Analysis Folder
+
+This folder contains the thesis statistics code.
+
+Quick start:
+
+```bash
+cd analysis
 python -m venv .venv
-source .venv/bin/activate       # sur macOS / Linux
-# .venv\Scripts\activate        # sur Windows
-
-# 2) Installer les dépendances
+source .venv/bin/activate
 pip install -r requirements.txt
+python smoke.py
+```
 
-# 3) Lancer l'app Streamlit
-streamlit run streamlit.py
+Private workbook is intentionally excluded from Git. See `analysis/private_data/README.md`.
