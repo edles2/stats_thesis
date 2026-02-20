@@ -1,4 +1,6 @@
-# Oral Medicine Thesis Stats Module
+# stats_radiotherapy
+
+Oral medicine thesis statistics module.
 
 Portfolio-ready analysis module for comparing automated dental dose methods with a manual reference.
 
